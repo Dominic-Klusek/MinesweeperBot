@@ -6,6 +6,7 @@
 import random, pygame, sys
 from pygame.locals import *
 from MinesweeperBot import MineSweeperBot
+import time, os
 
 # set constants
 FPS = 30
@@ -13,11 +14,11 @@ WINDOWWIDTH = 800
 WINDOWHEIGHT = 900
 BOXSIZE = 30
 GAPSIZE = 5
-FIELDWIDTH = 20
-FIELDHEIGHT = 20
+FIELDWIDTH = 9
+FIELDHEIGHT = 9
 XMARGIN = int((WINDOWWIDTH-(FIELDWIDTH*(BOXSIZE+GAPSIZE)))/2)
 YMARGIN = XMARGIN
-MINESTOTAL = 60
+MINESTOTAL = 10
 
 # assertions
 assert MINESTOTAL < FIELDHEIGHT*FIELDWIDTH, 'More mines than boxes'
@@ -51,7 +52,6 @@ FONTTYPE = 'Courier New'
 FONTSIZE = 20
 
 def main():
-
     # initialize global variables & pygame module, set caption
     global FPSCLOCK, DISPLAYSURFACE, BASICFONT, RESET_SURF, RESET_RECT, SHOW_SURF, SHOW_RECT
     pygame.init()
@@ -74,10 +74,12 @@ def main():
     # set background color
     DISPLAYSURFACE.fill(BGCOLOR)
 
-    #bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
+    # initialize bot
+    bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
     # main game loop
     while True:
-
+        pygame.display.update()
+        #input("Perform Next Move?")
         # check for quit function
         checkForKeyPress()
 
@@ -95,11 +97,13 @@ def main():
         for event in pygame.event.get(): 
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
+                '''
             elif event.type == MOUSEMOTION:
                 mouse_x, mouse_y = event.pos
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
                 mouseClicked = True
+                '''
             elif event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     spacePressed = True
@@ -116,10 +120,10 @@ def main():
         drawText('to mark areas that you think contain mines.', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-40)
             
         # determine boxes at clicked areas
-        box_x, box_y = getBoxAtPixel(mouse_x, mouse_y)
+        # box_x, box_y = getBoxAtPixel(mouse_x, mouse_y)
 
         # Get a box to press and set mouseClicked to true
-        #box_x, box_y, mouseClicked = bot.performmove(revealedBoxes, mineField)
+        box_x, box_y, mouseClicked = bot.performmove(revealedBoxes, mineField)
 
         # mouse not over a box in field
         if (box_x, box_y) == (None, None):
@@ -157,19 +161,21 @@ def main():
 
                     # when mine is revealed, show mines
                     if mineField[box_x][box_y] == '[X]':
+                        print("{} {}".format(box_x, box_y))
                         showMines(revealedBoxes, mineField, box_x, box_y)
                         gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+                        print("\n\n")
 
         # check if player has won 
         if gameWon(revealedBoxes, mineField):
             gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
 
-        print(mineField)
         # redraw screen, wait clock tick
         pygame.display.update()
         FPSCLOCK.tick(FPS)
+        #input("Next Move")
     
 def blankField():
 
