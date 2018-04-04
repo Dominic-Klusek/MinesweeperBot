@@ -5,6 +5,7 @@
 
 import random, pygame, sys
 from pygame.locals import *
+from MinesweeperBot import MineSweeperBot
 
 # set constants
 FPS = 30
@@ -73,6 +74,7 @@ def main():
     # set background color
     DISPLAYSURFACE.fill(BGCOLOR)
 
+    #bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
     # main game loop
     while True:
 
@@ -116,6 +118,9 @@ def main():
         # determine boxes at clicked areas
         box_x, box_y = getBoxAtPixel(mouse_x, mouse_y)
 
+        # Get a box to press and set mouseClicked to true
+        #box_x, box_y, mouseClicked = bot.performmove(revealedBoxes, mineField)
+
         # mouse not over a box in field
         if (box_x, box_y) == (None, None):
 
@@ -145,7 +150,7 @@ def main():
                 # reveal clicked boxes
                 if mouseClicked:
                     revealedBoxes[box_x][box_y] = True
-
+         
                     # when 0 is revealed, show relevant boxes
                     if mineField[box_x][box_y] == '[0]':
                         showNumbers(revealedBoxes, mineField, box_x, box_y, zeroListXY)
@@ -160,7 +165,8 @@ def main():
         if gameWon(revealedBoxes, mineField):
             gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
-            
+
+        print(mineField)
         # redraw screen, wait clock tick
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -516,3 +522,122 @@ def checkForKeyPress():
 # run code
 if __name__ == '__main__':
     main()
+
+'''
+def main():
+
+    # initialize global variables & pygame module, set caption
+    global FPSCLOCK, DISPLAYSURFACE, BASICFONT, RESET_SURF, RESET_RECT, SHOW_SURF, SHOW_RECT
+    pygame.init()
+    pygame.display.set_caption('Minesweeper')
+    FPSCLOCK = pygame.time.Clock()
+    DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    BASICFONT = pygame.font.SysFont(FONTTYPE, FONTSIZE)
+
+    # obtain reset & show objects and rects
+    RESET_SURF, RESET_RECT = drawButton('RESET', TEXTCOLOR_3, RESETBGCOLOR, WINDOWWIDTH/2, WINDOWHEIGHT-120)
+    SHOW_SURF, SHOW_RECT = drawButton('SHOW ALL', TEXTCOLOR_3, RESETBGCOLOR, WINDOWWIDTH/2, WINDOWHEIGHT-95)
+
+    # stores XY of mouse events
+    mouse_x = 0
+    mouse_y = 0
+
+    # set up data structures and lists
+    mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+
+    # set background color
+    DISPLAYSURFACE.fill(BGCOLOR)
+
+    bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
+    # main game loop
+    while True:
+
+        # check for quit function
+        checkForKeyPress()
+
+        # initialize input booleans
+        mouseClicked = False
+        spacePressed = False
+
+        # draw field
+        DISPLAYSURFACE.fill(BGCOLOR)
+        pygame.draw.rect(DISPLAYSURFACE, FIELDCOLOR, (XMARGIN-5, YMARGIN-5, (BOXSIZE+GAPSIZE)*FIELDWIDTH+5, (BOXSIZE+GAPSIZE)*FIELDHEIGHT+5))
+        drawField()
+        drawMinesNumbers(mineField)        
+
+        # event handling loop
+        for event in pygame.event.get(): 
+            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+                terminate()
+            elif event.type == MOUSEMOTION:
+                mouse_x, mouse_y = event.pos
+            elif event.type == MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                mouseClicked = True
+            elif event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    spacePressed = True
+            elif event.type == KEYUP:
+                if event.key == K_SPACE:
+                    spacePressed = False
+
+        # draw covers
+        drawCovers(revealedBoxes, markedMines)
+
+        # mine marker tip
+        tipFont = pygame.font.SysFont(FONTTYPE, 16) ## not using BASICFONT - too big
+        drawText('Tip: Highlight a box and press space (rather than click the mouse)', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-60)
+        drawText('to mark areas that you think contain mines.', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-40)
+            
+        # determine boxes at clicked areas
+        box_x, box_y = getBoxAtPixel(mouse_x, mouse_y)
+
+        # mouse not over a box in field
+        if (box_x, box_y) == (None, None):
+
+            # check if reset box is clicked
+            if RESET_RECT.collidepoint(mouse_x, mouse_y):
+                highlightButton(RESET_RECT)
+                if mouseClicked: 
+                    mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+
+            # check if show box is clicked
+            if SHOW_RECT.collidepoint(mouse_x, mouse_y):
+                highlightButton(SHOW_RECT)
+                if mouseClicked:
+                    revealedBoxes = blankRevealedBoxData(True)
+
+        # mouse currently over box in field
+        else:
+
+            # highlight unrevealed box
+            if not revealedBoxes[box_x][box_y]: 
+                highlightBox(box_x, box_y)
+
+                # mark mines
+                if spacePressed:
+                    markedMines.append([box_x, box_y])
+                    
+                # reveal clicked boxes
+                if mouseClicked:
+                    revealedBoxes[box_x][box_y] = True
+
+                    # when 0 is revealed, show relevant boxes
+                    if mineField[box_x][box_y] == '[0]':
+                        showNumbers(revealedBoxes, mineField, box_x, box_y, zeroListXY)
+
+                    # when mine is revealed, show mines
+                    if mineField[box_x][box_y] == '[X]':
+                        showMines(revealedBoxes, mineField, box_x, box_y)
+                        gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
+                        mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+
+        # check if player has won 
+        if gameWon(revealedBoxes, mineField):
+            gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
+            mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+            
+        # redraw screen, wait clock tick
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+'''
