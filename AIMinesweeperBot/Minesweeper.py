@@ -161,7 +161,6 @@ def main():
 
                     # when mine is revealed, show mines
                     if mineField[box_x][box_y] == '[X]':
-                        print("{} {}".format(box_x, box_y))
                         showMines(revealedBoxes, mineField, box_x, box_y)
                         gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
@@ -175,7 +174,8 @@ def main():
         # redraw screen, wait clock tick
         pygame.display.update()
         FPSCLOCK.tick(FPS)
-        #input("Next Move")
+        print("{} {}".format(box_x, box_y))
+        input("Next Move")
     
 def blankField():
 
