@@ -56,7 +56,7 @@ class MineSweeperBot:
                                     lowestX = i+xi
                                     lowestY = j+yi
                                     lowestProbability = probabilities[i+xi][j+yi]
-                                    # return coordinates of block with lowest probability to have bomb
+                    # return coordinates of block with lowest probability to have bomb
                     return lowestX, lowestY
         return -1, -1
 
@@ -69,11 +69,16 @@ class MineSweeperBot:
             call function again with new proportionBoard and iteration
         return proportionBoard
         '''
-        print("X: {}, Y: {}".format(x, y))
+        # print("X: {}, Y: {}".format(x, y))
         if iteration == 5:
             return probabilityBoard
         else:
-            probabilityOfNearbyBoxes = self.calculateProbability(x, y, revealedBoxes)
+            # get tile number so that probability can be scaled
+            numberOfTile = mineField[x][y]
+            numberOfTile = numberOfTile.replace('[','')
+            numberOfTile = numberOfTile.replace(']','')
+            # get probability of a bomb being in nearby unreaveled boxes and scale it by the number in the tile
+            probabilityOfNearbyBoxes = self.calculateProbability(x, y, revealedBoxes) * float(numberOfTile)
             self.checkedNumbers.append([x,y])
             for i in range(-1, 2, 1):
                 for j in range(-1, 2, 1):
@@ -81,7 +86,7 @@ class MineSweeperBot:
                     if ((x + i >= 0) and (y + j >= 0)) and (((x + i) < self.x) and ((y + j) < self.y)):
                         try:
                             if revealedBoxes[x + i][y + i] == False:
-                                probabilityBoard[i][j] += probabilityOfNearbyBoxes
+                                probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
                         except:
                             print("Revealed Error")
             # call function again, with next numbered box
@@ -89,6 +94,8 @@ class MineSweeperBot:
             # if the next found numbered box is 
             if not([nextX, nextY] == [-1,-1]):
                 probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
+                print(iteration)
+                print(probabilityBoard)
         return probabilityBoard
 
     def calculateProbability(self, x, y, revealedBoxes):

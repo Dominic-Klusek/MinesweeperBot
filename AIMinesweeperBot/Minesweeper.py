@@ -79,7 +79,6 @@ def main():
     # main game loop
     while True:
         pygame.display.update()
-        #input("Perform Next Move?")
         # check for quit function
         checkForKeyPress()
 
@@ -165,6 +164,7 @@ def main():
                         gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
                         print("\n\n")
+                    pygame.display.update()
 
         # check if player has won 
         if gameWon(revealedBoxes, mineField):
@@ -172,9 +172,8 @@ def main():
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
 
         # redraw screen, wait clock tick
-        pygame.display.update()
         FPSCLOCK.tick(FPS)
-        print("{} {}".format(box_x, box_y))
+        print("x:{}\ty:{}".format(box_x, box_y))
         input("Next Move")
     
 def blankField():
