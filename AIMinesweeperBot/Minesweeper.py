@@ -164,12 +164,14 @@ def main():
                         gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
                         print("\n\n")
+                        bot.clear_Lists()
         pygame.display.update()
 
         # check if player has won 
         if gameWon(revealedBoxes, mineField):
             gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
+            bot.clear_Lists()
 
         # redraw screen, wait clock tick
         FPSCLOCK.tick(FPS)
