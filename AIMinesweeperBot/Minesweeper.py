@@ -164,7 +164,7 @@ def main():
                         gameOverAnimation(mineField, revealedBoxes, markedMines, 'LOSS')
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
                         print("\n\n")
-                    pygame.display.update()
+        pygame.display.update()
 
         # check if player has won 
         if gameWon(revealedBoxes, mineField):
