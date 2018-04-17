@@ -35,6 +35,8 @@ class MineSweeperBot:
         # if we did not find an appropriate tile to choose, we don't perform the move
         elif (x == False) and (y == False):
             # special cases
+            if (self.number_of_unchecked_boxes(revealedBoxes, mineField) == 0):
+                self.checkedBoxes = np.zeros((self.x, self.y))
             performMove = False
         # clear checked numbers after each turn
         self.checkedNumbers.clear()
@@ -51,6 +53,7 @@ class MineSweeperBot:
                 # if we have a box that is revealed and not checked
                 if(revealedBoxes[i][j] == True) and (self.checkedBoxes[i][j] == 0) and (mineField[i][j] in self.validNumberedBoxes):
                     self.checkedBoxes[i][j] = 1
+                    print("Origin Coordinates :[{}, {}]".format(i,j))
                     # create a list of probabilities of nearby boxes
                     probabilityBoard = self.boxProbability(i, j, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
                     lowestX, lowestY = self.look_at_probabilities(probabilityBoard, i, j, revealedBoxes, mineField)
@@ -91,7 +94,6 @@ class MineSweeperBot:
             call function again with new proportionBoard and iteration
         return proportionBoard
         '''
-        # print("X: {}, Y: {}".format(x, y))
         if iteration == 10:
             return probabilityBoard
         else:
@@ -109,11 +111,10 @@ class MineSweeperBot:
                                 self.blackList.append([x+i, y+j])
                                 probabilityBoard[x+i][y+j] = 99999
                                 print("BlackList: {}".format(self.blackList))
-                            elif (revealedBoxes[x+i][y+j] == False):
+                            elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
                                 probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
                         except:
                             pass
-                            #print("Revealed Error")
             # call function again, with next numbered box
             nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
             # if the next found numbered box is 
@@ -127,7 +128,7 @@ class MineSweeperBot:
 
     def calculateProbability(self, x, y, revealedBoxes):
         '''
-        take coordinate and then check immediate area, and return probability
+        Take coordinate and then check immediate area, and return probability
         0 0 0
         0 X 0
         0 0 0
@@ -142,7 +143,7 @@ class MineSweeperBot:
 
     def findNextNumberedBox(self, x, y, revealedBoxes, mineField):
         '''
-        find the next block around the current block
+        Find the next block around the current block
         '''
         nextBlockX = -1
         nextBlockY = -1
@@ -159,7 +160,7 @@ class MineSweeperBot:
 
     def count_unrevealed_boxes(self, x, y, revealedBoxes):
         '''
-        method to count the number of unrevealed tiles
+        Method to count the number of unrevealed tiles
         '''
         unrevealedBoxes = 0
         # search surrounding boxes
@@ -171,7 +172,6 @@ class MineSweeperBot:
                         unrevealedBoxes+=1
                 except:
                     pass
-                    #print("Revealed Error")
         return unrevealedBoxes
 
     def get_tile_number(self, x, y, mineField):
@@ -182,6 +182,17 @@ class MineSweeperBot:
         numberOfTile = numberOfTile.replace('[','')
         numberOfTile = numberOfTile.replace(']','')
         return numberOfTile
+    
+    def number_of_unchecked_boxes(self, revealedBoxes, mineField):
+        '''
+        Method to check the number of unchecked boxes in the grid
+        '''
+        numberOfUnChecked = 0
+        for x in range(0, self.x):
+            for y in range(0, self.y):
+                if (mineField[x][y] in self.validNumberedBoxes) and (revealedBoxes[x][y] == True) and (self.checkedBoxes[x][y] == False):
+                    numberOfUnChecked += 1
+        return numberOfUnChecked
     
     def clear_Lists(self):
         self.checkedBoxes = np.empty((1,0))
