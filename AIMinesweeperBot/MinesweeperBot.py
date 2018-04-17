@@ -32,9 +32,11 @@ class MineSweeperBot:
             x = np.random.randint(low=0, high=self.x)
             y = np.random.randint(low=0, high=self.y)
             self.checkedBoxes = np.zeros((self.x, self.y))
+        # if we did not find an appropriate tile to choose, we don't perform the move
         elif (x == False) and (y == False):
             # special cases
             performMove = False
+        # clear checked numbers after each turn
         self.checkedNumbers.clear()
         return x, y, performMove
 
@@ -117,9 +119,10 @@ class MineSweeperBot:
             # if the next found numbered box is 
             if not([nextX, nextY] == [-1,-1]):
                 probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
+        # print out board of probabilities just for debugging
         np.set_printoptions(precision=1)
         if iteration == 0:
-            print(probabilityBoard)
+            print(np.transpose(probabilityBoard))
         return probabilityBoard
 
     def calculateProbability(self, x, y, revealedBoxes):
@@ -129,6 +132,7 @@ class MineSweeperBot:
         0 X 0
         0 0 0
         '''
+        # check the number of unrevealed boxes
         unrevealedBoxes = self.count_unrevealed_boxes(x, y, revealedBoxes)
         # we have found no boxes that are unrevealed around box, reset checked boxes
         if unrevealedBoxes == 0:
