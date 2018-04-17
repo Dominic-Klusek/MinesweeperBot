@@ -103,14 +103,15 @@ class MineSweeperBot:
                     # if box is unrevealed then increment value of probabilityBoard at indices by calculated probability
                     if ((x + i >= 0) and (y + j >= 0)) and (((x + i) < self.x) and ((y + j) < self.y)):
                         try:
-                            if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)):
+                            if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)) and not([x+i, y+j] in self.blackList):
                                 self.blackList.append([x+i, y+j])
                                 probabilityBoard[x+i][y+j] = 99999
                                 print("BlackList: {}".format(self.blackList))
                             elif (revealedBoxes[x+i][y+j] == False):
                                 probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
                         except:
-                            print("Revealed Error")
+                            pass
+                            #print("Revealed Error")
             # call function again, with next numbered box
             nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
             # if the next found numbered box is 
@@ -165,7 +166,8 @@ class MineSweeperBot:
                     if revealedBoxes[x+i][y+j] == False:
                         unrevealedBoxes+=1
                 except:
-                    print("Revealed Error")
+                    pass
+                    #print("Revealed Error")
         return unrevealedBoxes
 
     def get_tile_number(self, x, y, mineField):
