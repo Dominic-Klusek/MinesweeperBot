@@ -48,8 +48,8 @@ class MineSweeperBot:
         (aka what move doesn't hit a mine)
         '''
         # check boxes until we get 
-        for i in range(0, self.x):
-            for j in range(0, self.y):
+        for j in range(0, self.x):
+            for i in range(0, self.y):
                 # if we have a box that is revealed and not checked
                 if(revealedBoxes[i][j] == True) and (self.checkedBoxes[i][j] == 0) and (mineField[i][j] in self.validNumberedBoxes):
                     self.checkedBoxes[i][j] = 1
@@ -71,7 +71,12 @@ class MineSweeperBot:
         numberinTile = self.get_tile_number(x,y,mineField)
         print("Test X: {}\nTest Y: {}".format(x,y))
         print("Tile Number: {}\n# unrevealed tiles: {}\n".format(numberinTile, unrevealedBoxes))
-        if(int(numberinTile) == int(unrevealedBoxes)):
+        '''
+        Special Cases
+        1. if we have the case where the number of unrevealed tiles is equal to number in tiles
+        2. if we already know that the tiles near the test block are already bombs
+        '''
+        if(int(numberinTile) == int(unrevealedBoxes) or (self.number_of_blacklisted_boxes(x, y,revealedBoxes) == int(numberinTile))):
             return False, False
         lowestX = 0
         lowestY = 0
@@ -94,23 +99,25 @@ class MineSweeperBot:
             call function again with new proportionBoard and iteration
         return proportionBoard
         '''
-        if iteration == 10:
-            return probabilityBoard
+        print("Iteration: {}".format(iteration))
+        if not (x == -1):
+            self.checkedNumbers.append([x,y])
         else:
+            return probabilityBoard
+        nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
+        while not(nextX == -1):
             # get tile number so that probability can be scaled
             numberOfTile = self.get_tile_number(x, y, mineField)
             # get probability of a bomb being in nearby unreaveled boxes and scale it by the number in the tile
             probabilityOfNearbyBoxes = self.calculateProbability(x, y, revealedBoxes) * float(numberOfTile)
-            self.checkedNumbers.append([x,y])
             for i in range(-1, 2, 1):
                 for j in range(-1, 2, 1):
                     # if box is unrevealed then increment value of probabilityBoard at indices by calculated probability
-                    if ((x + i >= 0) and (y + j >= 0)) and (((x + i) < self.x) and ((y + j) < self.y)):
                         try:
                             if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)) and not([x+i, y+j] in self.blackList):
                                 self.blackList.append([x+i, y+j])
                                 probabilityBoard[x+i][y+j] = 99999
-                                print("BlackList: {}".format(self.blackList))
+                                #print("BlackList: {}".format(self.blackList))
                             elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
                                 probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
                         except:
@@ -118,12 +125,14 @@ class MineSweeperBot:
             # call function again, with next numbered box
             nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
             # if the next found numbered box is 
-            if not([nextX, nextY] == [-1,-1]):
-                probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
+            probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
         # print out board of probabilities just for debugging
         np.set_printoptions(precision=1)
         if iteration == 0:
             print(np.transpose(probabilityBoard))
+            print("Checked numbers: {}".format(self.checkedNumbers))
+            print("Blacklisted Tiles: {}".format(self.blackList))
+        nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
         return probabilityBoard
 
     def calculateProbability(self, x, y, revealedBoxes):
@@ -148,8 +157,8 @@ class MineSweeperBot:
         nextBlockX = -1
         nextBlockY = -1
         # search around box
-        for i in range(-1, 2, 1):
-            for j in range(-1, 2, 1):
+        for j in range(-1, 2, 1):
+            for i in range(-1, 2, 1):
                 #if the box is revealed, and box is a numbered tile, and we are not looking at the current block
                 if ((x + i < 0) or (x + i >= self.x)) or ((y + j < 0) or (y + j >= self.y)) or ((x + i == x) and (y + j == y)):
                     pass
@@ -194,6 +203,19 @@ class MineSweeperBot:
                     numberOfUnChecked += 1
         return numberOfUnChecked
     
+    def number_of_blacklisted_boxes(self, x, y, revealedBoxes):
+        numberofBlacklisted = 0
+        # search surrounding boxes
+        for i in range(-1, 2, 1):
+            for j in range(-1, 2, 1):
+                # if box is unrevealed then increment unrevealedBoxes
+                try:
+                    if revealedBoxes[x+i][y+j] == False and not([x+i,y+j] in self.blackList):
+                        numberofBlacklisted += 1
+                except:
+                    pass
+        return numberofBlacklisted
+
     def clear_Lists(self):
         self.checkedBoxes = np.empty((1,0))
         self.checkedNumbers.clear()
