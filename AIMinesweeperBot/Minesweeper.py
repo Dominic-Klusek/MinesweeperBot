@@ -60,6 +60,10 @@ def main():
     DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     BASICFONT = pygame.font.SysFont(FONTTYPE, FONTSIZE)
 
+    #number of wins and losses
+    numWins = 0
+    numLoses = 0
+
     # obtain reset & show objects and rects
     RESET_SURF, RESET_RECT = drawButton('RESET', TEXTCOLOR_3, RESETBGCOLOR, WINDOWWIDTH/2, WINDOWHEIGHT-120)
     SHOW_SURF, SHOW_RECT = drawButton('SHOW ALL', TEXTCOLOR_3, RESETBGCOLOR, WINDOWWIDTH/2, WINDOWHEIGHT-95)
@@ -115,8 +119,10 @@ def main():
 
         # mine marker tip
         tipFont = pygame.font.SysFont(FONTTYPE, 16) ## not using BASICFONT - too big
-        drawText('Tip: Highlight a box and press space (rather than click the mouse)', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-60)
-        drawText('to mark areas that you think contain mines.', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-40)
+        #drawText('Tip: Highlight a box and press space (rather than click the mouse)', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-60)
+        #drawText('to mark areas that you think contain mines.', tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-40)
+        drawText('Number of Wins: {}'.format(numWins), tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-60)
+        drawText('Number of Losses: {}'.format(numLoses), tipFont, TEXTCOLOR_3, DISPLAYSURFACE, WINDOWWIDTH/2, WINDOWHEIGHT-40)
             
         # determine boxes at clicked areas
         # box_x, box_y = getBoxAtPixel(mouse_x, mouse_y)
@@ -165,6 +171,7 @@ def main():
                         mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
                         print("\n\n")
                         bot.clear_Lists_total()
+                        numLoses+=1
         pygame.display.update()
 
         # check if player has won 
@@ -172,11 +179,12 @@ def main():
             gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
             bot.clear_Lists()
+            numWins+=1
 
         # redraw screen, wait clock tick
         FPSCLOCK.tick(FPS)
-        print("x:{}\ty:{}".format(box_x, box_y))
-        input("Next Move")
+        print("Chosen x:{}\tChosen y:{}".format(box_x, box_y))
+        #input("Next Move")
     
 def blankField():
 

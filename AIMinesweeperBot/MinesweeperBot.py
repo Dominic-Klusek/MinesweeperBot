@@ -33,7 +33,7 @@ class MineSweeperBot:
             y = np.random.randint(low=0, high=self.y)
             self.checkedBoxes = np.zeros((self.x, self.y))
         # if we did not find an appropriate tile to choose, we don't perform the move
-        elif (x == False) and (y == False):
+        elif (x == False) and (y == False) and (x is bool) and (y is bool):
             # special cases
             if (self.number_of_unchecked_boxes(revealedBoxes, mineField) == 0):
                 self.checkedBoxes = np.zeros((self.x, self.y))
@@ -48,15 +48,15 @@ class MineSweeperBot:
         (aka what move doesn't hit a mine)
         '''
         # check boxes until we get 
-        for j in range(0, self.x):
-            for i in range(0, self.y):
+        for x in range(0, self.x):
+            for y in range(0, self.y):
                 # if we have a box that is revealed and not checked
-                if(revealedBoxes[i][j] == True) and (self.checkedBoxes[i][j] == 0) and (mineField[i][j] in self.validNumberedBoxes):
-                    self.checkedBoxes[i][j] = 1
-                    print("Origin Coordinates :[{}, {}]".format(i,j))
+                if(revealedBoxes[x][y] == True) and (self.checkedBoxes[x][y] == 0) and (mineField[x][y] in self.validNumberedBoxes):
+                    self.checkedBoxes[x][y] = 1
+                    print("Origin Coordinates :[{}, {}]".format(x,y))
                     # create a list of probabilities of nearby boxes
-                    probabilityBoard = self.boxProbability(i, j, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
-                    lowestX, lowestY = self.look_at_probabilities(probabilityBoard, i, j, revealedBoxes, mineField)
+                    probabilityBoard = self.boxProbability(x, y, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
+                    lowestX, lowestY = self.look_at_probabilities(probabilityBoard, x, y, revealedBoxes, mineField)
                     # return coordinates of block with lowest probability to have bomb
                     return lowestX, lowestY
         return -1, -1 # return statement for first move/ invalid move
@@ -76,7 +76,7 @@ class MineSweeperBot:
         1. if we have the case where the number of unrevealed tiles is equal to number in tiles
         2. if we already know that the tiles near the test block are already bombs
         '''
-        if(int(numberinTile) == int(unrevealedBoxes) or (self.number_of_blacklisted_boxes(x, y,revealedBoxes) == int(numberinTile))):
+        if(int(numberinTile) == int(unrevealedBoxes)):
             return False, False
         lowestX = -1
         lowestY = -1
@@ -114,19 +114,23 @@ class MineSweeperBot:
                 for j in range(-1, 2, 1):
                     # if box is unrevealed then increment value of probabilityBoard at indices by calculated probability
                         try:
-                            if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)) and not([x+i, y+j] in self.blackList):
+                            if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)) and not([x+i, y+j] in self.blackList) and (x+i < self.x and x+i >= 0) and (y+j < self.y and y+j >= 0):
                                 self.blackList.append([x+i, y+j])
                                 probabilityBoard[x+i][y+j] = 99999
                             elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
                                 probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
                         except:
                             pass
+
             # call function again, with next numbered box
             nextX, nextY = self.findNextNumberedBox(x, y, revealedBoxes, mineField)
-            # if the next found numbered box is 
-            probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
+
+            # if the next found numbered box is invalid/doesn't exist don't recursively call
+            if not((nextX == -1) or (nextY == -1)):
+                probabilityBoard = self.boxProbability(nextX, nextY, iteration + 1, probabilityBoard, revealedBoxes, mineField)
             if (nextX == -1):
                 break
+
         # print out board of probabilities just for debugging
         np.set_printoptions(precision=1)
         if iteration == 0:
@@ -178,7 +182,7 @@ class MineSweeperBot:
             for j in range(-1, 2, 1):
                 # if box is unrevealed then increment unrevealedBoxes
                 try:
-                    if revealedBoxes[x+i][y+j] == False:
+                    if revealedBoxes[x+i][y+j] == False and (x+i < self.x and x+i >= 0) and (y+j < self.y and y+j >= 0):
                         unrevealedBoxes+=1
                 except:
                     pass
@@ -191,7 +195,7 @@ class MineSweeperBot:
         numberOfTile = mineField[x][y]
         numberOfTile = numberOfTile.replace('[','')
         numberOfTile = numberOfTile.replace(']','')
-        return numberOfTile
+        return int(numberOfTile)
     
     def number_of_unchecked_boxes(self, revealedBoxes, mineField):
         '''
@@ -211,7 +215,7 @@ class MineSweeperBot:
             for j in range(-1, 2, 1):
                 # if box is unrevealed then increment unrevealedBoxes
                 try:
-                    if revealedBoxes[x+i][y+j] == False and not([x+i,y+j] in self.blackList):
+                    if (x+i < self.x and x+i >= 0) and (y+j < self.y and y+j >= 0) and revealedBoxes[x+i][y+j] == False and not([x+i,y+j] in self.blackList):
                         numberofBlacklisted += 1
                 except:
                     pass
