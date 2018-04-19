@@ -129,7 +129,8 @@ def main():
 
         # Get a box to press and set mouseClicked to true
         box_x, box_y, mouseClicked = bot.performmove(revealedBoxes, mineField)
-
+        
+        input("Next Move")
         # mouse not over a box in field
         if (box_x, box_y) == (None, None):
 
@@ -183,8 +184,8 @@ def main():
 
         # redraw screen, wait clock tick
         FPSCLOCK.tick(FPS)
-        print("Chosen x:{}\tChosen y:{}".format(box_x, box_y))
-        #input("Next Move")
+        print("Chosen x:{}\tChosen y:{}\tMouse Clicked: {}".format(box_x, box_y, mouseClicked))
+        
     print("NUmber of Wins: {}".format(numWins))
     print("Number of Losses: {}".format(numLoses))
     print("Win Percentage: {}".format(float(numWins/100.0)))
