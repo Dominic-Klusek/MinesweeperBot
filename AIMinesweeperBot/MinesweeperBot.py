@@ -56,10 +56,13 @@ class MineSweeperBot:
                     print("Origin Coordinates :[{}, {}]".format(x,y))
                     # create a list of probabilities of nearby boxes
                     probabilityBoard = self.boxProbability(x, y, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
+<<<<<<< HEAD
                     self.checkedNumbers.clear()
                     #check entire board for tiles that are safe or unsafe
                     self.check_for_blacklist(revealedBoxes, mineField)
                     self.check_for_whitelist(revealedBoxes, mineField)
+=======
+>>>>>>> parent of 7e26795... Working on Changing Code Pt. 5
                     lowestX, lowestY = self.look_at_probabilities(probabilityBoard, x, y, revealedBoxes, mineField)
                     self.lowest.clear()
                     self.whiteList.clear()
@@ -124,9 +127,15 @@ class MineSweeperBot:
         '''
         if(int(numberinTile) == int(unrevealedBoxes)):
             return False, False
+<<<<<<< HEAD
         lowestX = False
         lowestY = False
         lowestProbability = 9999999999
+=======
+        lowestX = -1
+        lowestY = -1
+        lowestProbability = 999999
+>>>>>>> parent of 7e26795... Working on Changing Code Pt. 5
         for xi in range(-1, 2, 1):
             for yi in range(-1, 2, 1):
                 if (x + xi >= 0 and x+xi < self.x) and (y + yi >= 0 and y+yi < self.y) and not([x+xi, y+yi] in self.blackList):
@@ -163,9 +172,16 @@ class MineSweeperBot:
                         try:
                             if (revealedBoxes[x+i][y+j] == False) and (self.count_unrevealed_boxes(x,y,revealedBoxes) == int(numberOfTile)) and not([x+i, y+j] in self.blackList) and (x+i < self.x and x+i >= 0) and (y+j < self.y and y+j >= 0):
                                 self.blackList.append([x+i, y+j])
+<<<<<<< HEAD
                                 probabilityBoard[x+i][y+j] = 99999999
                             elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
                                 probabilityBoard[x+i][y+j] = (probabilityBoard[x+i][y+j] + probabilityOfNearbyBoxes) / 2.0
+=======
+                                probabilityBoard[x+i][y+j] = 99999
+                            elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
+                                probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
+                                probabilityBoard[x+i][y+j] = probabilityBoard[x+i][y+j] / 2.0
+>>>>>>> parent of 7e26795... Working on Changing Code Pt. 5
                         except:
                             pass
 

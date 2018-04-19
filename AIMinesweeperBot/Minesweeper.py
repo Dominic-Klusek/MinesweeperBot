@@ -81,7 +81,7 @@ def main():
     # initialize bot
     bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
     # main game loop
-    while (numLoses + numWins) < 20:
+    while True:
         pygame.display.update()
         # check for quit function
         checkForKeyPress()
@@ -184,11 +184,16 @@ def main():
 
         # redraw screen, wait clock tick
         FPSCLOCK.tick(FPS)
+<<<<<<< HEAD
         print("Chosen x:{}\tChosen y:{}\tMouse Clicked: {}".format(box_x, box_y, mouseClicked))
         
     print("NUmber of Wins: {}".format(numWins))
     print("Number of Losses: {}".format(numLoses))
     print("Win Percentage: {}".format(float(numWins/100.0)))
+=======
+        print("Chosen x:{}\tChosen y:{}".format(box_x, box_y))
+        #input("Next Move")
+>>>>>>> parent of 7e26795... Working on Changing Code Pt. 5
     
 def blankField():
 
