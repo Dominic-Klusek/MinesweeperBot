@@ -83,8 +83,8 @@ class MineSweeperBot:
         lowestProbability = 999999
         for xi in range(-1, 2, 1):
             for yi in range(-1, 2, 1):
-                if ((x + xi >= 0) and (y + yi >= 0)) and (((x + xi) < self.x) and ((y + yi) < self.y)) and not([x+xi, y+yi] in self.blackList):
-                    if(probabilityBoard[x+xi][y+yi] < lowestProbability) and (revealedBoxes[x+xi][y+yi] == False):
+                if (x + xi >= 0 and x+xi < self.x) and (y + yi >= 0 and y+yi < self.y) and not([x+xi, y+yi] in self.blackList):
+                    if(probabilityBoard[x+xi][y+yi] <= lowestProbability) and (revealedBoxes[x+xi][y+yi] == False):
                         lowestX = x+xi
                         lowestY = y+yi
                         lowestProbability = probabilityBoard[x+xi][y+yi]
@@ -119,6 +119,7 @@ class MineSweeperBot:
                                 probabilityBoard[x+i][y+j] = 99999
                             elif (revealedBoxes[x+i][y+j] == False) and not([x+i, y+j] in self.blackList):
                                 probabilityBoard[x+i][y+j] += probabilityOfNearbyBoxes
+                                probabilityBoard[x+i][y+j] = probabilityBoard[x+i][y+j] / 2.0
                         except:
                             pass
 
