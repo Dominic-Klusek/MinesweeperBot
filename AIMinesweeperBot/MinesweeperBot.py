@@ -36,7 +36,7 @@ class MineSweeperBot:
             self.checkedBoxes = np.zeros((self.x, self.y))
         # if we did not find an appropriate tile to choose, we don't perform the move
         elif (x == False) and (y == False) and (x is bool) and (y is bool):
-            # special cases
+            # special case where we have run out of boxes to check
             if (self.number_of_unchecked_boxes(revealedBoxes, mineField) == 0):
                 self.checkedBoxes = np.zeros((self.x, self.y))
             performMove = False
@@ -47,29 +47,38 @@ class MineSweeperBot:
         Bot will analyze board and decide what is the best move
         (aka what move doesn't hit a mine)
         '''
-        # check boxes until we get 
+        # check all boxes for a box that is not checked yet
         for x in range(0, self.x):
             for y in range(0, self.y):
-                # if we have a box that is revealed and not checked
+                # if we have a box that is revealed and not checked, enter if statement
                 if(revealedBoxes[x][y] == True) and (self.checkedBoxes[x][y] == 0) and (mineField[x][y] in self.validNumberedBoxes):
+                    # mark box as checked
                     self.checkedBoxes[x][y] = 1
                     print("Origin Coordinates :[{}, {}]".format(x,y))
+
                     # create a list of probabilities of nearby boxes
                     probabilityBoard = self.boxProbability(x, y, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
                     self.checkedNumbers.clear()
+
                     #check entire board for tiles that are safe or unsafe
                     self.check_for_blacklist(revealedBoxes, mineField)
                     self.check_for_whitelist(revealedBoxes, mineField)
+
                     #print("Checked numbers: {}".format(self.checkedNumbers))
                     print("Blacklisted Tiles: {}".format(self.blackList))
                     print("WhiteListed Tiles: {}".format(self.whiteList))
+
+                    # recursively look for coordinates that have low probability
                     lowestX, lowestY = self.look_at_probabilities(probabilityBoard, x, y, revealedBoxes, mineField)
+
+                    # clear temporary lists of coordinates, since we are done with calculations of coordinates
                     self.lowest.clear()
                     self.whiteList.clear()
                     self.checkedNumbers.clear()
+
                     # return coordinates of block with lowest probability to have bomb
                     return lowestX, lowestY
-        return -1, -1 # return statement for first move/ invalid move
+        return -1, -1 # return statement for first move/invalid move
 
     def look_at_probabilities(self, probabilityBoard, x, y, revealedBoxes, mineField, iteration = 0):
         '''
@@ -114,6 +123,7 @@ class MineSweeperBot:
         if iteration == 0:
             print("Tile Number: {}\n# unrevealed tiles: {}\n# blacklisted tiles: {}".format(numberinTile, unrevealedBoxes, numberofBlacklisted))
             print("Lowest Points: {}".format(self.lowest))
+            #find the lowest probability in range of low probability points from before
             lowestX = False
             lowestY = False
             lowestProbability = 9999999999
@@ -122,6 +132,17 @@ class MineSweeperBot:
                     lowestX = self.lowest[i][0]
                     lowestY = self.lowest[i][1]
                     lowestProbability = probabilityBoard[self.lowest[i][0]][self.lowest[i][1]] 
+            # now we find all points with that low probability
+            lowestX = False
+            lowestY = False
+            tempList = []
+            for i in range(0, len(self.lowest)):
+                if(probabilityBoard[self.lowest[i][0]][self.lowest[i][1]] == lowestProbability):
+                    tempList.append([self.lowest[i][0], self.lowest[i][1]])
+            # pick a random point from that list, and return those coordinates
+            randomIndex = np.random.randint(0, len(tempList))
+            lowestX = self.lowest[randomIndex][0]
+            lowestY = self.lowest[randomIndex][1]
         return lowestX, lowestY
 
         '''
@@ -214,15 +235,17 @@ class MineSweeperBot:
         for x in range(0, self.x):
             for y in range(0, self.y):
                 if(mineField[x][y] in self.validNumberedBoxes):
+                    # find the number of unrevealed tiles, number of blacklisted tiles, and the number from the tile
                     num1 = self.count_unrevealed_boxes(x, y, revealedBoxes)
                     num2 = self.number_of_blacklisted_boxes(x, y,revealedBoxes) + 1
-                    if (num1 == num2):
+                    num3 = self.get_tile_number(x, y, mineField)
+                    # if we have it where there are definitely safe tiles, we try to find them
+                    if (num1 == num2) and (num3 < num1):
                         print("Coordinates: {}\nUnRevealed Check: {}\nBlackListed Check: {}".format([x,y], num1, num2))
                         for xi in range(-1, 2, 1):
                             for yj in range(-1, 2, 1):
                                 if ((x+xi >= 0) and (x+xi < self.x) and (y+yj >= 0) and (y+yj < self.y)):
-                                    if not([x+xi, y+yj] in self.blackList):
-                                        if (revealedBoxes[x+xi][y+yj] == False):
+                                    if not([x+xi, y+yj] in self.blackList) and (revealedBoxes[x+xi][y+yj] == False) and not([x+xi, y+yj] in self.whiteList):
                                             #if not(mineField[x+xi][y+yj] in self.validNumberedBoxes):
                                             print("White Added")
                                             self.whiteList.append([x+xi, y+yj])
