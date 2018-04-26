@@ -81,7 +81,7 @@ def main():
     # initialize bot
     bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
     # main game loop
-    while True:
+    while (numWins + numLoses) < 5:
         pygame.display.update()
         # check for quit function
         checkForKeyPress()
@@ -188,7 +188,7 @@ def main():
         
     print("NUmber of Wins: {}".format(numWins))
     print("Number of Losses: {}".format(numLoses))
-    print("Win Percentage: {}".format(float(numWins/100.0)))
+    print("Win Percentage: {}".format(float(numWins/(numWins + numLoses))))
     
 def blankField():
 
