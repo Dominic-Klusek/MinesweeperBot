@@ -139,10 +139,16 @@ class MineSweeperBot:
             for i in range(0, len(self.lowest)):
                 if(probabilityBoard[self.lowest[i][0]][self.lowest[i][1]] == lowestProbability):
                     tempList.append([self.lowest[i][0], self.lowest[i][1]])
+            print("Lowest List: {}".format(tempList))
+            print("Size of list of smallest probabilities: {}".format(len(tempList)))
             # pick a random point from that list, and return those coordinates
             randomIndex = np.random.randint(0, len(tempList))
+            '''
             lowestX = self.lowest[randomIndex][0]
             lowestY = self.lowest[randomIndex][1]
+            '''
+            lowestX = tempList[randomIndex][0]
+            lowestY = tempList[randomIndex][1]
         return lowestX, lowestY
 
     def boxProbability(self, x, y, iteration, probabilityBoard, revealedBoxes, mineField):
@@ -201,7 +207,7 @@ class MineSweeperBot:
         '''
         for x in range(0, self.x):
             for y in range(0, self.y):
-                if(mineField[x][y] in self.validNumberedBoxes):
+                if(mineField[x][y] in self.validNumberedBoxes) and (revealedBoxes[x][y] == True):
                     num1 = self.count_unrevealed_boxes(x, y, revealedBoxes)
                     num2 = self.number_of_blacklisted_boxes(x, y,revealedBoxes) + 1
                     num3 = self.get_tile_number(x, y, mineField)
