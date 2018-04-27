@@ -81,7 +81,7 @@ def main():
     # initialize bot
     bot = MineSweeperBot(FIELDWIDTH, FIELDHEIGHT, MINESTOTAL)
     # main game loop
-    while (numWins + numLoses) < 5:
+    while (numWins + numLoses) < 20:
         pygame.display.update()
         # check for quit function
         checkForKeyPress()
