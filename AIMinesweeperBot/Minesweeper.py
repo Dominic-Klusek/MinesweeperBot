@@ -179,7 +179,7 @@ def main():
         if gameWon(revealedBoxes, mineField):
             gameOverAnimation(mineField, revealedBoxes, markedMines, 'WIN')
             mineField, zeroListXY, revealedBoxes, markedMines = gameSetup()
-            bot.clear_Lists()
+            bot.clear_Lists_total()
             numWins+=1
 
         # redraw screen, wait clock tick

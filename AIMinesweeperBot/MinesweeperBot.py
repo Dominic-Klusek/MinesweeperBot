@@ -176,7 +176,7 @@ class MineSweeperBot:
             # get tile number so that probability can be scaled
             numberOfTile = self.get_tile_number(x, y, mineField)
             # get probability of a bomb being in nearby unreaveled boxes and scale it by the number in the tile
-            probabilityOfNearbyBoxes = self.calculateProbability(x, y, revealedBoxes) * float(numberOfTile)
+            probabilityOfNearbyBoxes = self.calculateProbability(x, y, revealedBoxes) ** float(numberOfTile)
             for i in range(-1, 2, 1):
                 for j in range(-1, 2, 1):
                     # if box is unrevealed then increment value of probabilityBoard at indices by calculated probability
