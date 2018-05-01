@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\kluse\\Anaconda3\\envs\\AIProject\\python.exe"
+    "python.pythonPath": "C:\\Users\\kluse\\Anaconda3\\envs\\AIProject\\python.exe",
+    "python.linting.pylintEnabled": false
 }

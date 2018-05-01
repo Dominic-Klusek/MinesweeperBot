@@ -15,13 +15,13 @@ class MineSweeperBot:
         self.y = y
         self.numBombs = numBombs
         self.checkedBoxes = np.zeros((x, y)) #a list of already checked boxes, so that we don't check the same box multiple times
-        self.checkedNumbers = []
+        self.checkedNumbers = [] # keep a list of coordinates that are checked in thinking period
         self.validNumberedBoxes = [] #we need a list of the numbers that we will be working off of
-        for i in range(1, 10):
+        for i in range(1, 10): # keep a list of valid numbers that  from 1 - 10
             self.validNumberedBoxes.append('[{}]'.format(i))
-        self.blackList = []
-        self.whiteList = []
-        self.lowest = []
+        self.blackList = [] # keep a list of blacklisted coordinates
+        self.whiteList = [] # keep a list of coordinates that a guaranteed safe
+        self.lowest = [] # keep the coordinates of lowest probability
 
     def performmove(self, revealedBoxes, mineField):
         '''
@@ -140,6 +140,7 @@ class MineSweeperBot:
                     lowestX = self.lowest[i][0]
                     lowestY = self.lowest[i][1]
                     lowestProbability = probabilityBoard[self.lowest[i][0]][self.lowest[i][1]] 
+                    
             # now we find all points with that low probability
             lowestX = False
             lowestY = False
@@ -332,10 +333,6 @@ class MineSweeperBot:
                 except:
                     pass
         return numberofBlacklisted
-
-    def clear_Lists(self):
-        self.checkedBoxes = np.empty((1,0))
-        self.checkedNumbers.clear()
 
     def clear_Lists_total(self):
         self.checkedBoxes = np.empty((1,0))
