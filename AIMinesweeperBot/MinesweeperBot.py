@@ -61,10 +61,6 @@ class MineSweeperBot:
                     self.checkedBoxes[x][y] = 1
                     print("Origin Coordinates :[{}, {}]".format(x,y))
 
-                    # create a list of probabilities of nearby boxes
-                    probabilityBoard = self.boxProbability(x, y, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
-                    self.checkedNumbers.clear()
-
                     #check entire board for tiles that are safe or unsafe
                     self.clean_blacklist(revealedBoxes)
                     self.check_for_blacklist(revealedBoxes, mineField)
@@ -78,15 +74,12 @@ class MineSweeperBot:
                     if(len(self.whiteList) > 0):
                         return self.whiteList[0][0], self.whiteList[0][1]
 
+                    # create a list of probabilities of nearby boxes
+                    probabilityBoard = self.boxProbability(x, y, 0, np.zeros((self.x, self.y)), revealedBoxes, mineField)
+                    self.checkedNumbers.clear()
                     # recursively look for coordinates that have low probability
                     lowestX, lowestY = self.look_at_probabilities(probabilityBoard, x, y, revealedBoxes, mineField)
 
-                    '''
-                    # clear temporary lists of coordinates, since we are done with calculations of coordinates
-                    self.lowest.clear()
-                    self.whiteList.clear()
-                    self.checkedNumbers.clear()
-                    '''
                     # return coordinates of block with lowest probability to have bomb
                     return lowestX, lowestY
         return -1, -1 # return statement for first move/invalid move
