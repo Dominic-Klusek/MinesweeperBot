@@ -1,4 +1,5 @@
 import numpy as np
+import pygame
 
 def printList(list):
     for i in range(0, 9):
@@ -27,6 +28,7 @@ class MineSweeperBot:
         '''
         Method to have bot perform a move, will need x and y coordinates
         '''
+        pygame.display.update()
         performMove = True
         x, y = self.thinkofmove(revealedBoxes, mineField)
         # first move is always a fail

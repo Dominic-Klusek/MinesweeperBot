@@ -130,7 +130,7 @@ def main():
         # Get a box to press and set mouseClicked to true
         box_x, box_y, mouseClicked = bot.performmove(revealedBoxes, mineField)
         
-        input("Next Move")
+        #input("Next Move")
         # mouse not over a box in field
         if (box_x, box_y) == (None, None):
 
@@ -173,7 +173,6 @@ def main():
                         print("\n\n")
                         bot.clear_Lists_total()
                         numLoses+=1
-        pygame.display.update()
 
         # check if player has won 
         if gameWon(revealedBoxes, mineField):
